@@ -3,6 +3,6 @@ project(simple_db C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(simple_db main.c
-        repl.c
-        repl.h)
+add_executable(simple_db src/main.c
+        src/repl.c
+        src/repl.h)

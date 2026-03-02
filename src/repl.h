@@ -1,6 +1,5 @@
 #ifndef SIMPLE_DB_REPL_H
 #define SIMPLE_DB_REPL_H
-#include <stddef.h>
 
 typedef struct {
     char* buffer;
