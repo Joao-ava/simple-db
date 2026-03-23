@@ -5,4 +5,6 @@ set(CMAKE_C_STANDARD 11)
 
 add_executable(simple_db src/main.c
         src/repl.c
-        src/repl.h)
+        src/repl.h
+        src/preprocessor.h
+        src/preprocessor.c)
