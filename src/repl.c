@@ -15,35 +15,35 @@ void print_prompt() {
     printf("db > ");
 }
 
-ssize_t portable_getline(char **lineptr, size_t *n, FILE *stream) {
-    if (*lineptr == NULL || *n == 0) {
-        *n = 128;
-        *lineptr = malloc(*n);
-        if (*lineptr == NULL) return -1;
+ssize_t portable_get_line(char **line_pointer, size_t *read_size, FILE *stream) {
+    if (*line_pointer == NULL || *read_size == 0) {
+        *read_size = 128;
+        *line_pointer = malloc(*read_size);
+        if (*line_pointer == NULL) return -1;
     }
 
-    size_t pos = 0;
+    ssize_t pos = 0;
     int c;
 
     while ((c = fgetc(stream)) != EOF) {
-        if (pos + 1 >= *n) {
-            *n *= 2;
-            char *new_ptr = realloc(*lineptr, *n);
+        if (pos + 1 >= *read_size) {
+            *read_size *= 2;
+            char *new_ptr = realloc(*line_pointer, *read_size);
             if (!new_ptr) return -1;
 
-            *lineptr = new_ptr;
+            *line_pointer = new_ptr;
         }
-        (*lineptr)[pos++] = (char) c;
+        (*line_pointer)[pos++] = (char) c;
         if (c == '\n') break;
     }
     if (pos == 0 && c == EOF) return -1;
 
-    (*lineptr)[pos] = '\0';
+    (*line_pointer)[pos] = '\0';
     return pos;
 }
 
 void read_input(InputBuffer* input_buffer) {
-    ssize_t bytes_read = portable_getline(&(input_buffer->buffer), &(input_buffer->buffer_length), stdin);
+    ssize_t bytes_read = portable_get_line(&(input_buffer->buffer), &(input_buffer->buffer_length), stdin);
     if (bytes_read <= 0) {
         printf("Error reading input\n");
         exit(EXIT_FAILURE);
