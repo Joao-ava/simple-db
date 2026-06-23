@@ -1,12 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "repl.h"
+#include "preprocessor.h"
 
 InputBuffer* new_input_buffer() {
     InputBuffer* input_buffer = (InputBuffer*) malloc(sizeof(InputBuffer));
     input_buffer->buffer = NULL;
     input_buffer->buffer_length = 0;
     input_buffer->input_length = 0;
+    input_buffer->cursor = 0;
 
     return input_buffer;
 }
@@ -43,7 +45,7 @@ ssize_t portable_get_line(char **line_pointer, size_t *read_size, FILE *stream) 
 }
 
 void read_input(InputBuffer* input_buffer) {
-    ssize_t bytes_read = portable_get_line(&(input_buffer->buffer), &(input_buffer->buffer_length), stdin);
+    const ssize_t bytes_read = portable_get_line(&(input_buffer->buffer), &(input_buffer->buffer_length), stdin);
     if (bytes_read <= 0) {
         printf("Error reading input\n");
         exit(EXIT_FAILURE);
@@ -51,9 +53,25 @@ void read_input(InputBuffer* input_buffer) {
 
     input_buffer->input_length = bytes_read - 1;
     input_buffer->buffer[bytes_read - 1] = 0;
+    input_buffer->cursor = 0;
 }
 
 void close_input_buffer(InputBuffer* input_buffer) {
     free(input_buffer->buffer);
     free(input_buffer);
+}
+
+void print_parse_error(const char* sql_query, ParseError* error) {
+    if (error->code == ERROR_NONE) return;
+
+    printf("\n[SQL Compilation]\n");
+    printf("%s\n", error->message);
+    printf("Query: %s\n", sql_query);
+
+    // Draw an arrow
+    printf("       ");
+    for (int i = 0; i < error->cursor_position; i++) {
+        printf(" ");
+    }
+    printf("^\n");
 }
